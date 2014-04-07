@@ -249,17 +249,17 @@ class EmailMessage(object):
         return self.to + self.cc + self.bcc
 
     @gen.engine
-    def send(self, fail_silently=False, callback=None):
+    def send(self, fail_silently=False, callback=None,tag_callback=None):
         """Sends the email message."""
         if not self.recipients():
             # Don't bother creating the network connection if there's nobody to
             # send to.
             if callback:
-                callback(0)
+                callback(0,tag_callback)
                 return
         result = yield gen.Task(self.get_connection(fail_silently).send_messages, [self])
         if callback:
-            callback(result)
+            callback(result,tag_callback)
 
     def attach(self, filename=None, content=None, mimetype=None):
         """
